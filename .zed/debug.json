@@ -1,0 +1,11 @@
+[
+  {
+    "label": "Testbed",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "./bin/testbed",
+    "build": {
+      "command": "./build-all.sh"
+    }
+  }
+]

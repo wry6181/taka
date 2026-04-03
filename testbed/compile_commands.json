@@ -1,0 +1,19 @@
+[
+  {
+    "file": "./src/main.c",
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "./src/main.c",
+      "-g",
+      "-fPIC",
+      "-D_DEBUG",
+      "-DKIMPORT",
+      "-Isrc",
+      "-I../engine/src/",
+      "-o",
+      "../bin/testbed"
+    ],
+    "directory": "/Users/belasolyom/github/taka/testbed",
+    "output": "../bin/testbed"
+  }
+]

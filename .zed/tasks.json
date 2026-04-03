@@ -1,0 +1,20 @@
+[
+  {
+    "label": "build",
+    "command": "sh",
+    "args": ["-c", "./build-all.sh"],
+    "use_new_terminal": false,
+  },
+  {
+    "label": "run",
+    "command": "sh",
+    "args": ["-c", "./bin/testbed"],
+    "use_new_terminal": false,
+  },
+  {
+    "label": "build-and-run",
+    "command": "sh",
+    "args": ["-c", "./build-all.sh && ./bin/testbed"],
+    "use_new_terminal": false,
+  },
+]

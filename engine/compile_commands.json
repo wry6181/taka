@@ -1,0 +1,20 @@
+[
+  {
+    "file": "./src/core/logger.c",
+    "arguments": [
+      "/opt/homebrew/opt/llvm/bin/clang",
+      "./src/core/logger.c",
+      "-g",
+      "-fPIC",
+      "-D_DEBUG",
+      "-DKEXPORT",
+      "-Isrc",
+      "-I/Users/belasolyom/VulkanSDK/1.4.341.1/macOS/include",
+      "-I/opt/homebrew/Cellar/glfw/3.4/include",
+      "-o",
+      "../bin/libengine.dylib"
+    ],
+    "directory": "/Users/belasolyom/github/taka/engine",
+    "output": "../bin/libengine.dylib"
+  }
+]

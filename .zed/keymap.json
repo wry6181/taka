@@ -1,0 +1,11 @@
+[
+  {
+    "context": "VimControl && !menu",
+    "bindings": {
+      "alt+space m": ["task::Spawn", { "task_name": "build" }],
+      "alt+space r": ["task::Spawn", { "task_name": "run" }],
+      "alt+space e": ["task::Spawn", { "task_name": "build-and-run" }],
+      "alt+space d": "debugger::Start",
+    },
+  },
+]

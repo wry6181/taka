@@ -17,6 +17,7 @@ if [ "$OS" = "Darwin" ]; then
     echo "Building engine for macOS"
 
     includeFlags="-Isrc -I$VULKAN_SDK/macOS/include"
+    defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_MACOS=1"
     linkerFlags="-L$VULKAN_SDK/macOS/lib -lvulkan -lm -ldl -lpthread -Wl,-install_name,@rpath/libengine.dylib -Wl,-rpath,$VULKAN_SDK/macOS/lib"
     output="../bin/lib$assembly.dylib"
 
@@ -24,6 +25,7 @@ elif [ "$OS" = "Linux" ]; then
     echo "Building engine for Linux"
 
     includeFlags="-Isrc -I$VULKAN_SDK/include"
+    defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_LINUX=1"
     linkerFlags="-L$VULKAN_SDK/lib -lvulkan -lxcb -lX11 -lX11-xcb -lxkbcommon -lm -ldl -lpthread"
     output="../bin/lib$assembly.so"
 
@@ -43,3 +45,20 @@ if [ ! -f "../bin/lib$assembly.dylib" ] && [ ! -f "../bin/lib$assembly.so" ]; th
     echo "Build failed: output not found"
     exit 1
 fi
+
+echo "Generating compile_commands.json..."
+json="["
+first=true
+for f in $cFilenames; do
+    if [ "$first" = true ]; then
+        first=false
+    else
+        json="$json,"
+    fi
+    absdir="$(pwd)"
+    f_clean="${f#./}"
+    cmd="clang $f_clean $compilerFlags $defines $includeFlags"
+    json="$json{\"directory\": \"$absdir\", \"file\": \"$absdir/$f_clean\", \"command\": \"$cmd\"}"
+done
+json="$json]"
+echo "$json" > compile_commands.json

@@ -23,6 +23,6 @@ fi
 
 # Merge compile_commands.json files
 echo "Merging compile_commands.json..."
-jq -s '.[0] + .[1]' engine/compile_commands.json testbed/compile_commands.json > compile_commands.json
+jq -s 'add' engine/compile_commands.json testbed/compile_commands.json > compile_commands.json
 
 echo "All assemblies built successfully."

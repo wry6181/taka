@@ -17,7 +17,7 @@ if [ "$OS" = "Darwin" ]; then
     echo "Building engine for macOS"
 
     includeFlags="-Isrc -I$VULKAN_SDK/macOS/include"
-    defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_MACOS=1"
+    defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_MAC=1"
     linkerFlags="-L$VULKAN_SDK/macOS/lib -lvulkan -lm -ldl -lpthread -Wl,-install_name,@rpath/libengine.dylib -Wl,-rpath,$VULKAN_SDK/macOS/lib"
     output="../bin/lib$assembly.dylib"
 

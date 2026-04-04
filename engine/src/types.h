@@ -121,8 +121,8 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 // Posix
 #define T_PLATFORM_POSIX 1
 #elif __APPLE__
-// Apple platforms
 #define T_PLATFORM_APPLE 1
+#define T_PLATFORM_MAC 1
 #include <TargetConditionals.h>
 #if TARGET_IPHONE_SIMULATOR
 // iOS Simulator

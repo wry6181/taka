@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 
 OS="$(uname)"
 VULKAN_SDK="${VULKAN_SDK:-$HOME/VulkanSDK/1.4.341.1}"

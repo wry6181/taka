@@ -1,27 +1,24 @@
 #!/bin/bash
 # Build script for rebuilding everything
-set echo on
 
 echo "Building everything..."
 
-
-pushd engine
+pushd engine > /dev/null
 source build.sh
-popd
-
 ERRORLEVEL=$?
+popd > /dev/null
 if [ $ERRORLEVEL -ne 0 ]
 then
-echo "Error:"$ERRORLEVEL && exit
+    echo "Error: $ERRORLEVEL" && exit
 fi
 
-pushd testbed
+pushd testbed > /dev/null
 source build.sh
-popd
 ERRORLEVEL=$?
+popd > /dev/null
 if [ $ERRORLEVEL -ne 0 ]
 then
-echo "Error:"$ERRORLEVEL && exit
+    echo "Error: $ERRORLEVEL" && exit
 fi
 
 # Merge compile_commands.json files

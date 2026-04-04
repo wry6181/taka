@@ -21,7 +21,8 @@ static NSDate* start_time;
 @end
 
 @implementation AppDelegate
-- (void)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender {
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender {
+    return NO;
 }
 @end
 
@@ -50,7 +51,7 @@ b8 init_platform(mem_arena* arena, platform_state* plat_state, const char* app_n
 
     NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
     clock_frequency = 1.0;
-    start_time = [[NSDate date] retain];
+    start_time = [NSDate date];
 
     return TRUE;
 }
@@ -90,14 +91,14 @@ b8 platform_pump_messages(platform_state* plat_state) {
                 break;
             case NSEventTypeScrollWheel:
                 break;
-            case NSEventTypeQuit:
-                quit_flagged = TRUE;
-                break;
             default:
                 break;
         }
 
         [NSApp sendEvent:event];
+        if ([event type] == NSEventTypeAppKitDefined) {
+            quit_flagged = TRUE;
+        }
     }
 
     return !quit_flagged;

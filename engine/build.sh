@@ -6,20 +6,20 @@ VULKAN_SDK="${VULKAN_SDK:-$HOME/VulkanSDK/1.4.341.1}"
 
 mkdir -p ../bin
 
-cFilenames=$(find . -type f -name "*.c")
-
 assembly="engine"
 compiler="clang"
-compilerFlags="-g -shared -fPIC"
+compilerFlags="-g -shared -fPIC -fobjc-arc"
 defines="-D_DEBUG -DKEXPORT"
 
 if [ "$OS" = "Darwin" ]; then
     echo "Building engine for macOS"
 
     includeFlags="-Isrc -I$VULKAN_SDK/macOS/include"
-    defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_MAC=1"
-    linkerFlags="-L$VULKAN_SDK/macOS/lib -lvulkan -lm -ldl -lpthread -Wl,-install_name,@rpath/libengine.dylib -Wl,-rpath,$VULKAN_SDK/macOS/lib"
+    defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_MAC=1 -fobjc-arc"
+    linkerFlags="-L$VULKAN_SDK/macOS/lib -lvulkan -lm -ldl -lpthread -Wl,-install_name,@rpath/libengine.dylib -Wl,-rpath,$VULKAN_SDK/macOS/lib -framework AppKit -framework Foundation"
     output="../bin/lib$assembly.dylib"
+    cFilenames=$(find . -type f -name "*.c" | grep -v platform_linux | grep -v platform_win32)
+    cFilenames="$cFilenames $(find . -type f -name "*.m")"
 
 elif [ "$OS" = "Linux" ]; then
     echo "Building engine for Linux"
@@ -28,6 +28,7 @@ elif [ "$OS" = "Linux" ]; then
     defines="-D_DEBUG -DKEXPORT -DT_PLATFORM_LINUX=1"
     linkerFlags="-L$VULKAN_SDK/lib -lvulkan -lxcb -lX11 -lX11-xcb -lxkbcommon -lm -ldl -lpthread"
     output="../bin/lib$assembly.so"
+    cFilenames=$(find . -type f -name "*.c" | grep -v platform_mac | grep -v platform_win32)
 
 else
     echo "Unsupported OS: $OS"

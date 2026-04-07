@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-b8 initialize_logging() {
+b8 init_logging() {
     return TRUE;
 }
 
@@ -45,5 +45,5 @@ void log_output(log_level level, const char* massage, ...) {
 }
 
 void report_assertion_failure(const char* expression, const char* message, const char* file, u32 line) {
-    log_output(LOG_LEVEL_FATAL, "Assertion Failure: %s, message: '%s', in file: %s, line: %d\n", expression, message, file, line);
+    log_output(LOG_LEVEL_FATAL, "Assertion Failure: %s, message: '%s', in file: %s, line: %d", expression, message, file, line);
 }

@@ -73,7 +73,6 @@ b8 app_run() {
                 break;
             }
         }
-
     }
 
     _state.is_running = FALSE;

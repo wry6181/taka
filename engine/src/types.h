@@ -23,8 +23,11 @@ typedef atomic_uint au32;
 #define MByte(n) ((u64)(n) << 20)
 #define GByte(n) ((u64)(n) << 30)
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define TAKA_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define TAKA_MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+#define MIN TAKA_MIN
+#define MAX TAKA_MAX
 
 #define UNUSED(x) ((void)(x))
 //#define UNREACHABLE() ASSERT(!"Unreachable code!");

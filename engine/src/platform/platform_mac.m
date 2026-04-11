@@ -33,6 +33,14 @@ b8 init_platform(mem_arena* arena, platform_state* plat_state, const char* app_n
         plat_state->internal_state = PUSH_STRUCT_ZERO(arena, internal_state);
         internal_state* state = (internal_state*)plat_state->internal_state;
 
+        static BOOL app_initialized = NO;
+        if (!app_initialized) {
+            [NSApplication sharedApplication];
+            app_initialized = YES;
+        }
+
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
         NSRect content_rect = NSMakeRect(x, y, width, height);
 
         u32 window_style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
@@ -46,19 +54,20 @@ b8 init_platform(mem_arena* arena, platform_state* plat_state, const char* app_n
 
         [state->window setTitle:[NSString stringWithUTF8String:app_name]];
         [state->window center];
-        [state->window makeKeyAndOrderFront:NSApp];
+        [state->window makeKeyAndOrderFront:nil];
         [state->window orderFront:nil];
 
         [NSApp setDelegate:[[AppDelegate alloc] init]];
         [NSApp finishLaunching];
-
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
         [NSApp activateIgnoringOtherApps:YES];
 
         NSMenu* main_menu = [[NSMenu alloc] init];
+        NSMenuItem* app_item = [[NSMenuItem alloc] init];
+        NSMenu* app_menu = [[NSMenu alloc] init];
+        [app_item setSubmenu:app_menu];
+        [main_menu addItem:app_item];
         [NSApp setMainMenu:main_menu];
 
-        NSTimeInterval now = [[NSDate date] timeIntervalSince1970];
         clock_frequency = 1.0;
         start_time = [NSDate date];
     }
@@ -77,42 +86,15 @@ void destroy_platform(platform_state* plat_state) {
 b8 platform_pump_messages(platform_state* plat_state) {
     @autoreleasepool {
         NSEvent* event;
-        b8 quit_flagged = FALSE;
 
         while ((event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                          untilDate:nil
                                             inMode:NSDefaultRunLoopMode
                                            dequeue:YES])) {
-            switch ([event type]) {
-                case NSEventTypeKeyDown:
-                case NSEventTypeKeyUp:
-                case NSEventTypeFlagsChanged:
-                    break;
-                case NSEventTypeMouseMoved:
-                case NSEventTypeLeftMouseDown:
-                case NSEventTypeLeftMouseUp:
-                case NSEventTypeRightMouseDown:
-                case NSEventTypeRightMouseUp:
-                case NSEventTypeOtherMouseDown:
-                case NSEventTypeOtherMouseUp:
-                    break;
-                case NSEventTypeLeftMouseDragged:
-                case NSEventTypeRightMouseDragged:
-                case NSEventTypeOtherMouseDragged:
-                    break;
-                case NSEventTypeScrollWheel:
-                    break;
-                default:
-                    break;
-            }
-
             [NSApp sendEvent:event];
-            if ([event type] == NSEventTypeAppKitDefined) {
-                quit_flagged = TRUE;
-            }
         }
 
-        return !quit_flagged;
+        return TRUE;
     }
 }
 

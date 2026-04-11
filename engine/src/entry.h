@@ -34,6 +34,6 @@ int main(void) {
         return 2;
     }
 
-
+    arena_destroy(arena);
 
 }

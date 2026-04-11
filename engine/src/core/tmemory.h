@@ -30,4 +30,6 @@ void init_memory(mem_arena* arena);
 
 void* alloc_arena_memory(mem_arena* arena, u64 size, memory_tag tag);
 
-void release_arena_memory(mem_arena* arena, void* block, u64 size, memory_tag tag);
+void get_memory_usage_str(mem_arena* arena);
+
+//void release_arena_memory(mem_arena* arena, void* block, u64 size, memory_tag tag);

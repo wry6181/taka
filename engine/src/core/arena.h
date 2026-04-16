@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define ALIGN_UP_POW2(n, p) (((u64)(n) + ((u64)(p) - 1)) & (~((u64)(p) - 1)))
-#define AREANA_BASE_POS (sizeof(mem_arena))
+#define AREAN_BASE_POS (sizeof(mem_arena))
 #define ARENA_ALIGN (sizeof(void *))
 
 typedef struct mem_arena mem_arena;
@@ -127,9 +127,9 @@ struct mem_arena {
 static inline void *arena_push(mem_arena *arena, u64 size, b32 clear);
 
 static inline mem_arena *arena_create(u64 capacity) {
-  mem_arena *arena = (mem_arena *)malloc(capacity);
-  arena->capacity = capacity;
-  arena->pos = AREANA_BASE_POS;
+  mem_arena* arena = malloc(sizeof(mem_arena) + capacity);
+  arena->capacity = sizeof(mem_arena) + capacity;
+  arena->pos = AREAN_BASE_POS;
   arena->next = NULL;
   return arena;
 }
@@ -172,7 +172,7 @@ static inline void *arena_push(mem_arena *arena, u64 size, b32 clear) {
 }
 
 static inline void arena_pop(mem_arena *arena, u64 size) {
-  size = MIN(size, arena->pos - AREANA_BASE_POS);
+  size = MIN(size, arena->pos - AREAN_BASE_POS);
   arena->pos -= size;
 }
 
@@ -182,7 +182,7 @@ static inline void arena_pop_to(mem_arena *arena, u64 pos) {
 }
 
 static inline void arena_clear(mem_arena *arena) {
-  arena_pop_to(arena, AREANA_BASE_POS);
+  arena_pop_to(arena, AREAN_BASE_POS);
 }
 
 static inline void arena_print_mem(s8 name, mem_arena *arena) {

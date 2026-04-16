@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.h"
-#include <X11/X.h>
 
 typedef struct event_context event_context;
 struct event_context {

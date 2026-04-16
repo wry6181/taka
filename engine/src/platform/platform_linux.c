@@ -203,6 +203,22 @@ b8 platform_pump_messages(platform_state* plat_state) {
     return !quit_flagged;
 }
 
+void* platform_allocate(u64 size, b8 aligned) {
+    return malloc(size);
+}
+void platform_free(void* block, b8 aligned) {
+    free(block);
+}
+void* platform_zero_memory(void* block, u64 size) {
+    return memset(block, 0, size);
+}
+void* platform_copy_memory(void* dest, const void* source, u64 size) {
+    return memcpy(dest, source, size);
+}
+void* platform_set_memory(void* dest, i32 value, u64 size) {
+    return memset(dest, value, size);
+}
+
 void platform_console_write(const char* message, u8 colour) {
     const char* colour_strings[] = {"0;41", "1;31", "1;33", "1;32", "1;34", "1;30"};
     printf("\033[%sm%s\033[0m\n", colour_strings[colour], message);

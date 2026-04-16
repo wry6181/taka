@@ -153,6 +153,36 @@ void platform_sleep(u64 ms) {
     Sleep(ms);
 }
 
+void* platform_allocate(u64 size, b8 aligned) {
+    if (aligned) {
+        return _aligned_malloc(size, 16);
+    }
+    return malloc(size);
+}
+
+void platform_free(void* block, b8 aligned) {
+    if (aligned) {
+        _aligned_free(block);
+    } else {
+        free(block);
+    }
+}
+
+void* platform_zero_memory(void* block, u64 size) {
+    memset(block, 0, size);
+    return block;
+}
+
+void* platform_copy_memory(void* dest, const void* source, u64 size) {
+    memcpy(dest, source, size);
+    return dest;
+}
+
+void* platform_set_memory(void* dest, i32 value, u64 size) {
+    memset(dest, value, size);
+    return dest;
+}
+
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {
         case WM_ERASEBKGND:

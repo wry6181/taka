@@ -5,6 +5,7 @@
 #include "logger.h"
 #include "arena.h"
 #include "engine_types.h"
+#include "core/event.h"
 
 typedef struct app_state app_state;
 struct app_state {
@@ -39,6 +40,11 @@ b8 app_create(mem_arena* arena, engine* engine_inst) {
 
     _state.is_running = TRUE;
     _state.is_suspended = FALSE;
+
+    if(!event_init()) {
+        T_ERROR("Event system failed");
+        return FALSE;
+    }
 
     if(!init_platform(arena, &_state.platform, engine_inst->config.name, engine_inst->config.start_pos_x, engine_inst->config.start_pos_y, engine_inst->config.start_width, engine_inst->config.start_height)) {
         return FALSE;
@@ -76,6 +82,8 @@ b8 app_run() {
     }
 
     _state.is_running = FALSE;
+
+    event_distroy();
 
     destroy_platform(&_state.platform);
 

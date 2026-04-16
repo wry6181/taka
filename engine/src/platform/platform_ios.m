@@ -67,7 +67,6 @@ b8 init_platform(mem_arena* arena, platform_state* plat_state, const char* app_n
 void destroy_platform(platform_state* plat_state) {
     internal_state* state = (internal_state*)plat_state->internal_state;
     if (state->window) {
-        [state->window release];
         state->window = nil;
     }
 }
@@ -94,6 +93,34 @@ f64 platform_get_absolute_time() {
 
 void platform_sleep(u64 ms) {
     usleep(ms * 1000);
+}
+
+void* platform_allocate(u64 size, b8 aligned) {
+    if (aligned) {
+        void* ptr = NULL;
+        posix_memalign(&ptr, 16, size);
+        return ptr;
+    }
+    return malloc(size);
+}
+
+void platform_free(void* block, b8 aligned) {
+    free(block);
+}
+
+void* platform_zero_memory(void* block, u64 size) {
+    memset(block, 0, size);
+    return block;
+}
+
+void* platform_copy_memory(void* dest, const void* source, u64 size) {
+    memcpy(dest, source, size);
+    return dest;
+}
+
+void* platform_set_memory(void* dest, i32 value, u64 size) {
+    memset(dest, value, size);
+    return dest;
 }
 
 #endif

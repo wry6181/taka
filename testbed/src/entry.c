@@ -5,8 +5,8 @@
 
 b8 create_engine(mem_arena* arena, engine* engine) {
     engine->config.name = "TAKA Engine";
-    engine->config.start_height = 2000;
-    engine->config.start_width = 2000;
+    engine->config.start_height = 600;
+    engine->config.start_width = 800;
     engine->config.start_pos_x = 100;
     engine->config.start_pos_y = 100;
 

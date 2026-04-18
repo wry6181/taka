@@ -3,6 +3,7 @@
 #if T_PLATFORM_IOS
 
 #include "core/logger.h"
+#include "core/input.h"
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
@@ -13,10 +14,47 @@ typedef struct internal_state internal_state;
 struct internal_state {
     UIWindow* window;
     UIViewController* view_controller;
+    UIView* touch_view;
 };
 
 static f64 clock_frequency;
 static NSDate* start_time;
+
+@interface TouchInputView : UIView
+@end
+
+@implementation TouchInputView
+
+- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
+    for (UITouch* touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        input_process_button(BUTTON_LEFT, TRUE);
+        input_process_mouse_move((i16)location.x, (i16)location.y);
+    }
+}
+
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
+    for (UITouch* touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        input_process_mouse_move((i16)location.x, (i16)location.y);
+    }
+}
+
+- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
+    for (UITouch* touch in touches) {
+        CGPoint location = [touch locationInView:self];
+        input_process_button(BUTTON_LEFT, FALSE);
+        input_process_mouse_move((i16)location.x, (i16)location.y);
+    }
+}
+
+- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
+    for (UITouch* touch in touches) {
+        input_process_button(BUTTON_LEFT, FALSE);
+    }
+}
+
+@end
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 @property (strong, nonatomic) UIWindow* window;
@@ -52,8 +90,14 @@ b8 init_platform(mem_arena* arena, platform_state* plat_state, const char* app_n
     CGRect screen_bounds = [[UIScreen mainScreen] bounds];
     state->window = [[UIWindow alloc] initWithFrame:screen_bounds];
 
+    state->touch_view = [[TouchInputView alloc] initWithFrame:screen_bounds];
+    state->touch_view.backgroundColor = [UIColor blackColor];
+    state->touch_view.multipleTouchEnabled = YES;
+    state->touch_view.userInteractionEnabled = YES;
+
     state->view_controller = [[UIViewController alloc] init];
     state->view_controller.view.backgroundColor = [UIColor blackColor];
+    [state->view_controller.view addSubview:state->touch_view];
     
     state->window.rootViewController = state->view_controller;
     [state->window makeKeyAndVisible];

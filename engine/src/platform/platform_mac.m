@@ -30,7 +30,10 @@ static keys mac_translate_keycode(u16 keycode, u32 modifiers);
 
 @implementation AppDelegate
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender {
-    return NO;
+    return YES;  // Quit when window closed
+}
+- (void)applicationWillTerminate:(NSApplication *)sender {
+    // Will be called when quit is requested
 }
 @end
 
@@ -60,29 +63,29 @@ b8 init_platform(mem_arena* arena, platform_state* plat_state, const char* app_n
 
 [state->window setTitle:[NSString stringWithUTF8String:app_name]];
         [state->window center];
-        [state->window makeKeyAndOrderFront:nil];
+[state->window makeKeyAndOrderFront:nil];
         [state->window orderFront:nil];
+        
+        NSLog(@"Window created: %@", state->window);
 
         [NSApp setDelegate:[[AppDelegate alloc] init]];
         [NSApp finishLaunching];
         [NSApp activateIgnoringOtherApps:YES];
         
-        [NSEvent addGlobalMonitorForEventsMatchingMask:NSEventMaskKeyDown | NSEventMaskKeyUp
-                                           handler:^(NSEvent* event) {
-            keys key = mac_translate_keycode([event keyCode], [event modifierFlags]);
-            input_process_key(key, ([event type] == NSEventTypeKeyDown));
-        }];
-        
-        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskMouseMoved
+        // Use local event monitors - work when window is focused
+        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown | NSEventMaskKeyUp
                                                         handler:^NSEvent*(NSEvent* event) {
-            if ([event type] == NSEventTypeMouseMoved) {
-                input_process_mouse_move((i16)[event locationInWindow].x, (i16)[event locationInWindow].y);
-            } else {
+            if ([event type] == NSEventTypeKeyDown || [event type] == NSEventTypeKeyUp) {
                 keys key = mac_translate_keycode([event keyCode], [event modifierFlags]);
-                input_process_key(key, ([event type] == NSEventTypeKeyDown));
+                if (key != 0) {
+                    input_process_key(key, ([event type] == NSEventTypeKeyDown));
+                }
             }
             return event;
         }];
+
+        // Run NSApp run loop on main thread (required for event monitors)
+        [NSApp run];
 
         NSMenu* main_menu = [[NSMenu alloc] init];
         NSMenuItem* app_item = [[NSMenuItem alloc] init];
@@ -107,7 +110,15 @@ void destroy_platform(platform_state* plat_state) {
 }
 
 b8 platform_pump_messages(platform_state* plat_state) {
-    return TRUE;
+    @autoreleasepool {
+        // Run the run loop for a short time to process events
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, false);
+        return TRUE;
+    }
+}
+
+void platform_quit(void) {
+    [NSApp stop:nil];
 }
 
 void platform_console_write(const char* message, u8 colour) {

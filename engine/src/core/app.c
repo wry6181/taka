@@ -111,6 +111,7 @@ b8 application_on_event(u16 code, void* sender, void* listener_inst, event_conte
         case EVENT_CODE_APPLICATION_QUIT: {
             T_INFO("EVENT_CODE_APPLICATION_QUIT recieved, shutting down.\n");
             _state.is_running = FALSE;
+            platform_quit();
             return TRUE;
         }
     }

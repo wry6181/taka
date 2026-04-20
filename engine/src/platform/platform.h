@@ -12,6 +12,8 @@ void destroy_platform(platform_state* plat_state);
 
 b8 platform_pump_messages(platform_state* plat_state);
 
+void platform_quit(void);
+
 void* platform_allocate(u64 size, b8 aligned);
 void platform_free(void* block, b8 aligned);
 void* platform_zero_memory(void* block, u64 size);

@@ -1,9 +1,9 @@
 #include "core/event.h"
 #include "core/arena.h"
 #include "core/tmemory.h"
+#include "core/logger.h"
 #include "containers/darray.h"
 #include "types.h"
-#include <sys/syslimits.h>
 #include <sys/types.h>
 
 typedef struct registered_event registered_event;
@@ -48,7 +48,7 @@ void event_distroy() {
 }
 
 b8 event_register(u16 code, void *lisener, event_interface on_event) {
-    if(_is_init == TRUE) {
+    if(_is_init == FALSE) {
         return FALSE;
     }
 
@@ -56,6 +56,7 @@ b8 event_register(u16 code, void *lisener, event_interface on_event) {
 
     if(reg_event == 0) {
         reg_event = DARRAY_CREATE(registered_event);
+        _state.registered[code].events = reg_event;
     }
 
     u64 registered_count = DARRAY_LENGTH(reg_event);
@@ -74,7 +75,7 @@ b8 event_register(u16 code, void *lisener, event_interface on_event) {
 }
 
 b8 event_unregister(u16 code, void* lisener, event_interface on_event) {
-    if(_is_init == TRUE) {
+    if(_is_init == FALSE) {
         return FALSE;
     }
 
@@ -96,18 +97,20 @@ b8 event_unregister(u16 code, void* lisener, event_interface on_event) {
 }
 
 b8 event_fire(u16 code, void *sender, event_context context) {
-    if(_is_init == TRUE) {
+    if(_is_init == FALSE) {
         return FALSE;
     }
     registered_event* reg_event = _state.registered[code].events;
+    if(reg_event == 0) {
+        return FALSE;
+    }
     u64 registered_count = DARRAY_LENGTH(reg_event);
-    for(u32 i = 0; i < registered_count; ++i) {
+    for(u32 i = 0; i < registered_count; i++) {
         if(reg_event[i].callback(code, sender, reg_event[i].listener, context)) {
             return TRUE;
         }
     }
 
     return FALSE;
-
 
 }

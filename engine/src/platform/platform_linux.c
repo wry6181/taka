@@ -158,12 +158,11 @@ void destroy_platform(platform_state* plat_state) {
 b8 platform_pump_messages(platform_state* plat_state) {
     internal_state* state = (internal_state*)plat_state->internal_state;
 
-    xcb_generic_event_t* event;
+    xcb_generic_event_t* event = (xcb_generic_event_t*)1;
     xcb_client_message_event_t* cm;
 
     b8 quit_flagged = FALSE;
 
-    // Poll for events until null is returned.
     while (event != 0) {
         event = xcb_poll_for_event(state->connection);
         if (event == 0) {
@@ -174,20 +173,20 @@ b8 platform_pump_messages(platform_state* plat_state) {
         switch (event->response_type & ~0x80) {
             case XCB_KEY_PRESS:
             case XCB_KEY_RELEASE: {
-                // TODO: Key presses and releases
                 xcb_key_press_event_t *kb_event = (xcb_key_press_event_t *)event;
                 b8 pressed = event->response_type == XCB_KEY_PRESS;
                 xcb_keycode_t code = kb_event->detail;
                 KeySym key_sym = XkbKeycodeToKeysym(
                     state->display,
-                    (KeyCode)code,  //event.xkey.keycode,
+                    (KeyCode)code,
                     0,
-                    code & ShiftMask ? 1 : 0);
+                    0);
 
                 keys key = translate_keycode(key_sym);
 
-                // Pass to the input subsystem for processing.
-                input_process_key(key, pressed);
+                if (key != 0) {
+                    input_process_key(key, pressed);
+                }
             } break;
             case XCB_BUTTON_PRESS:
             case XCB_BUTTON_RELEASE: {
